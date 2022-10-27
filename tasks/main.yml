@@ -1,0 +1,13 @@
+---
+# tasks file for init-vm
+
+- name: setup keyboard
+  include_tasks: keyboards.yml
+
+- name: Setup FR timezone
+  shell: timedatectl set-timezone Europe/Paris
+
+
+
+- name: change grub config
+  include_tasks: grub.yml

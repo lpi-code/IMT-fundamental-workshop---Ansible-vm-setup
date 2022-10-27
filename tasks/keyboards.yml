@@ -1,0 +1,22 @@
+- name: Setup FR keyboard
+  shell: localectl set-keymap fr-latin9
+
+- name: Change locale
+  shell: localectl set-locale LANG=fr_FR.UTF-8
+
+- name: Copy keyboard script change
+  copy:
+    src: set_french_kb.vbash
+    dest: /tmp/set_french_kb.vbash
+    mode: 0755
+  when: ansible_hostname is search('vyos')
+
+- name: Change keyboard
+  shell: /tmp/set_french_kb.vbash
+  when: ansible_hostname is search('vyos')
+
+- name: Remove keyboard script change
+  file:
+    path: /tmp/set_french_kb.vbash
+    state: absent
+  when: ansible_hostname is search('vyos')

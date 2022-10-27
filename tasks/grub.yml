@@ -1,0 +1,56 @@
+- name: Gather kernel filename
+  shell: ls /boot/vmlinuz-* | tail -n 1
+  register: kernel_filename
+  changed_when: false
+
+- name: Gather initrd filename
+  shell: ls /boot/initrd.img-* | tail -n 1
+  register: initrd_filename
+  changed_when: false
+
+- name: set variable
+  set_fact:
+    kernel_filename: "{{ kernel_filename.stdout }}"
+    initrd_filename: "{{ initrd_filename.stdout }}"
+  changed_when: false
+
+- name: copy image name grabber
+  copy:
+    src: get_vyos_image_name.vbash
+    dest: /tmp/get_vyos_image_name.vbash
+    mode: 0755
+  changed_when: true
+
+- name: get vyos image name
+  shell: /tmp/get_vyos_image_name.vbash
+  register: image_name_stdout
+  changed_when: false
+
+- name: remove image name grabber
+  file:
+    path: /tmp/get_vyos_image_name.vbash
+    state: absent
+  changed_when: true
+
+- name: set vyos image name
+  set_fact:
+    vyos_image_name: "{{ image_name_stdout.stdout }}"
+  changed_when: false
+
+- name: Set grub config for vyos
+  template:
+    src: grub_vyos.cfg.j2
+    dest: /boot/grub/grub.cfg
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname is search('vyos')
+
+- name: Set grub config for alpine
+  template:
+    src: grub_alpine.cfg.j2
+    dest: /boot/grub/grub.cfg
+    owner: root
+    group: root
+    mode: 0644
+  when: ansible_hostname is search('alpine')
