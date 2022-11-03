@@ -20,7 +20,7 @@ menuentry "VyOS 320x240" {
 
 menuentry "VyOS 1920x1080" {
 	linux /boot/{{ vyos_image_name }}/vmlinuz boot=live rootdelay=5 noautologin net.ifnames=0 biosdevname=0 vyos-union=/boot/{{ vyos_image_name }}
-	initrd /boot/{{ vyos_image_name }}/initrd.im
+	initrd /boot/{{ vyos_image_name }}/initrd.img
 	set gfxpayload=1920x1080
 
 }
