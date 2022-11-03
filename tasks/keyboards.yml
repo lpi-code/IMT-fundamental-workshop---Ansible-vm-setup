@@ -1,9 +1,3 @@
-- name: Setup FR keyboard
-  shell: localectl set-keymap fr-latin9
-
-- name: Change locale
-  shell: localectl set-locale LANG=fr_FR.UTF-8
-
 - name: Copy keyboard script change
   copy:
     src: set_french_kb.vbash
