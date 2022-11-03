@@ -4,10 +4,9 @@
 - name: setup keyboard
   include_tasks: keyboards.yml
 
-- name: Setup FR timezone
-  shell: timedatectl set-timezone Europe/Paris
-
-
+- name: setup Alpine vm
+  include_tasks: setup_gui_alpine.yml
+  when: ansible_hostname is search('alpine')
 
 - name: change grub config
   include_tasks: grub.yml
