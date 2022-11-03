@@ -20,22 +20,26 @@
     dest: /tmp/get_vyos_image_name.vbash
     mode: 0755
   changed_when: true
+  when: ansible_hostname is search('vyos')
 
 - name: get vyos image name
   shell: /tmp/get_vyos_image_name.vbash
   register: image_name_stdout
   changed_when: false
+  when: ansible_hostname is search('vyos')
 
 - name: remove image name grabber
   file:
     path: /tmp/get_vyos_image_name.vbash
     state: absent
   changed_when: true
+  when: ansible_hostname is search('vyos')
 
 - name: set vyos image name
   set_fact:
     vyos_image_name: "{{ image_name_stdout.stdout }}"
   changed_when: false
+  when: ansible_hostname is search('vyos')
 
 - name: Set grub config for vyos
   template:
@@ -46,11 +50,11 @@
     mode: 0644
   when: ansible_hostname is search('vyos')
 
-- name: Set grub config for alpine
-  template:
-    src: grub_alpine.cfg.j2
-    dest: /boot/grub/grub.cfg
-    owner: root
-    group: root
-    mode: 0644
-  when: ansible_hostname is search('alpine')
+# - name: Set grub config for alpine
+#   template:
+#     src: grub_alpine.cfg.j2
+#     dest: /boot/grub/grub.cfg
+#     owner: root
+#     group: root
+#     mode: 0644
+#   when: ansible_hostname is search('alpine')
