@@ -1,0 +1,91 @@
+- name: Install alpine tools
+  apk:
+    name: 
+      - open-vm-tools
+      - openbox
+      - feh
+      - latte-dock
+      - alacritty
+      - terminus-font
+      - dillo
+      - wireshark
+      - filezilla
+    state: present
+
+- name: Setup xorg
+  shell: setup-xorg-base
+
+- name: Template alpine profile
+  template:
+    src: alpine_profile.j2
+    dest: /etc/profile.d/startx.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create global backgroud dir
+  file:
+    path: /usr/share/backgrounds
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Set wallpaper path
+  set_fact:
+    wallpaper_path: /usr/share/backgrounds/wallpaper.jpg
+  
+- name: Download a random wallpaper
+  get_url:
+    url: https://source.unsplash.com/random/1920x1080
+    dest: "{{ wallpaper_path }}"
+    mode: 0644
+
+- name: Set gui user homedir path
+  set_fact:
+    gui_user_homedir: "{{ '/home/' + gui_user if gui_user != 'root' else '/root' }}"
+
+- name: Template /etc/X11/xinit/xinitrc
+  template:
+    src: xinitrc.j2
+    dest: "{{ gui_user_homedir }}/.xinitrc"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install build dependencies
+  apk:
+    name: "{{ putty_build_apk }}"
+    state: present
+
+
+- name: Download putty source
+  get_url:
+    url: "{{ putty_source_url }}"
+    dest: /tmp/putty.tar.gzip
+    mode: 0644
+
+- name: Create putty build dir
+  file:
+    path: /tmp/putty
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  
+- name: Extract putty source gzip
+  shell: tar -xzf /tmp/putty.tar.gzip -C /tmp/putty --strip-components=1 && rm /tmp/putty.tar.gzip
+  
+- name: Build putty
+  shell: cd /tmp/putty && cmake . && cmake --build . && cmake --build . --target install
+
+- name: Remove putty source
+  file:
+    path: /tmp/putty
+    state: absent
+
+- name: Remove build dependencies
+  apk:
+    name: "{{ putty_build_apk }}"
+    state: absent
+

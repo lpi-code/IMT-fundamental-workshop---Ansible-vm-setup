@@ -6,7 +6,7 @@
 
 - name: setup Alpine vm
   include_tasks: setup_gui_alpine.yml
-  when: ansible_hostname is search('alpine')
+  when: ansible_distribution is search("Alpine")
 
 - name: change grub config
   include_tasks: grub.yml

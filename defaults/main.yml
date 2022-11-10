@@ -1,2 +1,11 @@
 ---
 # defaults file for init-vm
+putty_build_apk:
+  - cmake
+  - perl
+  - make
+  - g++
+  - gtk+3.0-dev
+
+
+putty_source_url: https://the.earth.li/~sgtatham/putty/latest/putty-0.78.tar.gz
